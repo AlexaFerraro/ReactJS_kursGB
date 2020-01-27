@@ -18,8 +18,16 @@ module.exports = {
         exclude: /node_modules/,
         include: path.resolve(__dirname, 'static_src'),
         loader: 'babel-loader',
-        options: {
-          presets: ['@babel/env', '@babel/react']
+        query: {
+          presets: ['@babel/env', '@babel/react'],
+          plugins: [
+            [
+              '@babel/plugin-proposal-class-properties',
+                {
+                  'loose': true
+                }
+            ]
+          ]
         }
       },
       {
@@ -40,4 +48,8 @@ module.exports = {
       }
     ]
   },
+  resolve: {
+    modules: [`${__dirname}/static_src`, 'node_modules'],
+    extensions: ['.js', '.jsx'],
+ },
 };
