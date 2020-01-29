@@ -1,0 +1,84 @@
+
+.message-field {
+  display: flex;
+  flex-direction: column;
+  background-color: #dad8d8;
+  height: 100%;
+  width: 100%;
+  overflow-y: scroll;
+}
+
+.layout {
+  height: 80%;
+  background-color: #e4f5fa;
+  justify-content: flex-start;
+  width: 70%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.message {
+  margin: 20px;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 18px;
+  margin: 5px;
+}
+
+.message-sender {
+  color: gray;
+  font-size: 14px;
+}
+
+.icon-menu {
+  margin-top: 1%;
+}
+
+.background-field {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5%;
+}
+
+.chatlist-field {
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(188, 221, 231);
+  height: 80%;
+  width: 30%;
+  justify-content: flex-start;
+  padding: 0px;
+  align-items: center;
+}
+
+.body-block {
+  display: flex;
+  justify-items: center;
+  height: 100%;
+  width: 80%;
+}
+
+.header {
+  display: flex;
+  width: 80%;
+  margin: auto;
+  align-items: center;
+}
+
+.paper {
+  display: inline-block;
+  margin: 0;
+  width: 100%;
+}
+
+.list {
+  padding: 0;
+  display: inline-block;
+  margin: 0;
+  width: 100%;
+}
