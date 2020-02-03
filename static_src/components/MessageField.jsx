@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { TextField, FloatingActionButton } from 'material-ui';
 import SendIcon from 'material-ui/svg-icons/content/send';
 import Message from './Message';
@@ -8,16 +9,12 @@ export default class MessageField extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      messages: [{ text: 'Привет', author: 'bot' }, { text: 'Как дела?', author: 'bot' }],
-      input: ''
-    };
+    this.state = this.props.state;
     this.textInput = React.createRef();
-    
-    this.handleClick = this.handleClick.bind(this);
-    this.componentDidUpdate = this.componentDidUpdate.bind(this);
-    this.sendMessage = this.sendMessage.bind(this);
   }
+  static propTypes = {
+    chatId: PropTypes.number.isRequired,
+  };
 
   style = {
     margin: '0px',
@@ -25,25 +22,35 @@ export default class MessageField extends React.Component {
     width: '100%'
   }
 
-  handleClick = (message) => {
-    this.sendMessage(message);
-  };
-
   handleChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  handleKeyUp = (e, message) => {
+  handleKeyUp = (e) => {
     if (e.keyCode === 13) {
-      this.sendMessage(message);
+      this.sendMessage(this.state.input, 'me')
     }
   };
 
-  sendMessage = (message) => {
-    this.setState({ 
-      messages: [ ...this.state.messages, {text: message, author: 'me'} ],
-      input: ''
-    });
+  sendMessage = (message, sender) => {
+    const { messages, chats, input } = this.state;
+    const { chatId } = this.props;
+
+    if (input.length > 0 || sender === 'bot') {
+      const messageId = Object.keys(messages).length + 1;
+      this.setState({
+        messages: {...messages,
+          [messageId]: {text: message, sender: sender}},
+        chats: {...chats,
+          [chatId]: { ...chats[chatId],
+            messageList: [...chats[chatId]['messageList'], messageId]
+          }
+        },
+      })
+    }
+    if (sender === 'me') {
+      this.setState({ input: '' })
+    }
   };
 
   componentDidMount() {
@@ -51,19 +58,24 @@ export default class MessageField extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.messages !==  this.state.messages) {
-      if (this.state.messages[this.state.messages.length - 1].author !== 'bot' ) {
+    const { messages } = this.state;
+    if (Object.keys(prevState.messages).length < Object.keys(messages).length &&
+      Object.values(messages)[Object.values(messages).length - 1].sender !== 'bot' ) {
         setTimeout(() =>
-          this.setState(
-            { messages: [ ...this.state.messages, {text:'Не приставай ко мне, я робот!', author: 'bot'} ] }),
-          1000);
-      }
+          this.sendMessage('Не приставай ко мне, я робот!', 'bot'), 1000);
     }
   }
 
   render() {
-    const messageElements = this.state.messages.map((messages, index) => (
-      <Message key={ index } text={ messages.text } author={ messages.author }/>));
+    const { messages, chats } = this.state;
+    const { chatId } = this.props;
+
+    const messageElements = chats[chatId].messageList.map((messageId, index) => (
+      <Message
+        key={ index }
+        text={ messages[messageId].text }
+        sender={ messages[messageId].sender }
+      />));
 
       return  <div className="layout">
                 <div className="message-field" >
@@ -77,8 +89,8 @@ export default class MessageField extends React.Component {
                             ref={ this.textInput }
                             onChange={ this.handleChange }
                             value={ this.state.input }
-                            onKeyUp={ (e) => this.handleKeyUp(e, this.state.input) } />
-                  <FloatingActionButton onClick={ () => this.handleClick(this.state.input) }>
+                            onKeyUp={ this.handleKeyUp } />
+                  <FloatingActionButton onClick={ () => this.sendMessage(this.state.input, 'me') }>
                     <SendIcon/>
                   </FloatingActionButton>
                 </div>
