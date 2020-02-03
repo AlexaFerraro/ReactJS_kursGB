@@ -1,32 +1,71 @@
 import React from 'react';
-import {List, ListItem} from 'material-ui/List';
+import PropTypes from 'prop-types';
+import Chat from './Chat';
+import { List, ListItem } from 'material-ui/List';
+import { Link } from 'react-router-dom';
 import Paper from 'material-ui/Paper'
-import ContentInbox from 'material-ui/svg-icons/content/inbox';
-import ActionGrade from 'material-ui/svg-icons/action/grade';
 import ContentSend from 'material-ui/svg-icons/content/send';
-import ContentDrafts from 'material-ui/svg-icons/content/drafts';
-import Divider from 'material-ui/Divider';
-import ActionInfo from 'material-ui/svg-icons/action/info';
+
 
 export default class ChatList extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = this.props.state;
+    this.chatNumber = Object.keys(this.state.chats).length;
+  }
+
+  static propTypes = {
+    chatId: PropTypes.number.isRequired,
+  };
+
+  getChat() {
+    const { chats} = this.state;
+    this.chatNumber++;
+
+    this.setState({
+      chats: {
+      ...chats, [this.chatNumber]: {title: "Чат " + this.chatNumber, messageList: []}}
+    });
+
+    const keys = Object.keys(this.state.chats);
+    const params = {
+      path: "/chat/" + this.chatNumber + "/",
+      title: "Chat " + this.chatNumber
+    }
+
+    return this.chatElements = <Chat
+        key={ keys }
+        path={ params.path }
+        title={ params.title }
+      />;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { chats } = this.state;
+    if (Object.keys(prevState.chats).length < Object.keys(chats).length) {
+      console.log(chats);
+    }
+  }
+
   render() {
+
     return <div className="chatlist-field">
         <Paper className="paper">
           <List>
-            <ListItem primaryText="Inbox" leftIcon={< ContentInbox />}/>
-            <ListItem primaryText="Starred" leftIcon={< ActionGrade />}/>
-            <ListItem primaryText="Sent mail" leftIcon={< ContentSend />}/>
-            <ListItem primaryText="Drafts" leftIcon={< ContentDrafts />}/>
+            <Link to="/chat/1/">
+              <ListItem primaryText="Chat 1" leftIcon={< ContentSend />}/>
+            </Link>
+            <Link to="/chat/2/">
+              <ListItem primaryText="Chat 2" leftIcon={< ContentSend />}/>
+            </Link>
+            <Link to="/chat/3/">
+              <ListItem primaryText="Chat 3" leftIcon={< ContentSend />}/>
+            </Link>
+            { this.chatElements }
+            <input type="submit" value="Add new Chat" onClick={ () => this.getChat() }/>
           </List>
         </Paper>
-        <Divider/>
-          <List className="list">
-            <ListItem primaryText="All mail" rightIcon={<ActionInfo />} />
-            <ListItem primaryText="Trash" rightIcon={<ActionInfo />} />
-            <ListItem primaryText="Spam" rightIcon={<ActionInfo />} />
-            <ListItem primaryText="Follow up" rightIcon={<ActionInfo />} />
-          </List>
     </div>
   }
 }
