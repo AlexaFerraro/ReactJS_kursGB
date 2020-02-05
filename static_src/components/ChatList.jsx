@@ -1,71 +1,82 @@
 import React from 'react';
+import {bindActionCreators} from 'redux';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import Chat from './Chat';
-import { List, ListItem } from 'material-ui/List';
 import { Link } from 'react-router-dom';
+import { List, ListItem } from 'material-ui/List';
+import { TextField } from 'material-ui';
 import Paper from 'material-ui/Paper'
 import ContentSend from 'material-ui/svg-icons/content/send';
+import AddIcon from 'material-ui/svg-icons/content/add';
+import { addChat } from '../actions/chatActions';
 
-
-export default class ChatList extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = this.props.state;
-    this.chatNumber = Object.keys(this.state.chats).length;
-  }
+class ChatList extends React.Component {
 
   static propTypes = {
-    chatId: PropTypes.number.isRequired,
+    chats: PropTypes.object.isRequired,
+    addChat: PropTypes.func.isRequired,
   };
 
-  getChat() {
-    const { chats} = this.state;
-    this.chatNumber++;
+  state = {
+    input: '',
+  };
 
-    this.setState({
-      chats: {
-      ...chats, [this.chatNumber]: {title: "Чат " + this.chatNumber, messageList: []}}
-    });
+  handleChange = (event) => {
+    this.setState({ [event.target.name]: event.target.value });
+  };
 
-    const keys = Object.keys(this.state.chats);
-    const params = {
-      path: "/chat/" + this.chatNumber + "/",
-      title: "Chat " + this.chatNumber
+  handleKeyUp = (event) => {
+    if (event.keyCode === 13) {
+      this.handleAddChat();
     }
+  };
 
-    return this.chatElements = <Chat
-        key={ keys }
-        path={ params.path }
-        title={ params.title }
-      />;
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const { chats } = this.state;
-    if (Object.keys(prevState.chats).length < Object.keys(chats).length) {
-      console.log(chats);
+  handleAddChat = () => {
+    if (this.state.input.length > 0) {
+      this.props.addChat(this.state.input);
+      this.setState({ input: '' });
     }
-  }
+  };
 
   render() {
+    const { chats } = this.props;
+    const chatElements = Object.keys(chats).map(chatId => (
+      <Link key={ chatId } to={ `/chat/${chatId}` }>
+        <ListItem
+          primaryText={ chats[chatId].title }
+          leftIcon={ <ContentSend /> } />
+      </Link>));
 
     return <div className="chatlist-field">
         <Paper className="paper">
           <List>
-            <Link to="/chat/1/">
-              <ListItem primaryText="Chat 1" leftIcon={< ContentSend />}/>
-            </Link>
-            <Link to="/chat/2/">
-              <ListItem primaryText="Chat 2" leftIcon={< ContentSend />}/>
-            </Link>
-            <Link to="/chat/3/">
-              <ListItem primaryText="Chat 3" leftIcon={< ContentSend />}/>
-            </Link>
-            { this.chatElements }
-            <input type="submit" value="Add new Chat" onClick={ () => this.getChat() }/>
+            { chatElements }
+            <ListItem
+              key="Add new chat"
+              leftIcon={ <AddIcon /> }
+              onClick={ this.handleAddChat }
+              style={ { height: '60px' } }
+              children= {
+                <TextField
+                  key="textField"
+                  fullWidth
+                  name="input"
+                  hintText="Добавить новый чат"
+                  onChange={ this.handleChange }
+                  value={ this.state.input }
+                  onKeyUp={ this.handleKeyUp }
+                />}
+              />
           </List>
         </Paper>
     </div>
   }
 }
+
+const mapStateToProps = ({ chatReducer }) => ({
+  chats: chatReducer.chats,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({ addChat }, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChatList);
