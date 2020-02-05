@@ -1,44 +1,39 @@
 import React from 'react';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import MessageField from './MessageField';
 import ChatList from './ChatList';
 import Header from './Header';
+import { sendMessage } from '../actions/messageActions';
 
-export default class Layout extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state =
-    {
-      chats: {
-        1: {title: 'Чат 1', messageList: [1]},
-        2: {title: 'Чат 2', messageList: [2]},
-        3: {title: 'Чат 3', messageList: []},
-      },
-      messages: {
-        1: { text: "Привет!", sender: 'bot' },
-        2: { text: "Здравствуйте!", sender: 'bot' },
-      },
-      input: ''
-    };
-  }
+class Layout extends React.Component {
 
   static propTypes = {
-    chatId: PropTypes.number,
+    chatId: PropTypes.number
   };
 
   static defaultProps = {
-    chatId: 1,
+    chatId: 1
   };
 
   render() {
-    return <div className="background-field">
-      <Header chatId={ this.props.chatId }/>
+    return (
+      <div className="background-field">
+        <Header chatId={ this.props.chatId } />
         <div className="body-block">
-          <ChatList state={ this.state } chatId={ this.props.chatId }/>
-          <MessageField chatId={ this.props.chatId } state={ this.state }/>
+          <ChatList/>
+          <MessageField
+            chatId={ this.props.chatId }
+          />
         </div>
-    </div>
+      </div>
+    )
   }
 }
 
+const mapStateToProps = ({}) => ({});
+
+const mapDispatchToProps = dispatch => bindActionCreators({ sendMessage }, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Layout);
