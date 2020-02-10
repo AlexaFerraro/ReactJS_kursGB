@@ -44,8 +44,7 @@ class Profile extends React.Component {
 }
 
 const mapStateToProps = ({ profileReducer }) => ({
-  name: profileReducer.name,
-  phone: profileReducer.phone
+  ...profileReducer,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);

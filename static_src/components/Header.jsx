@@ -46,7 +46,7 @@ class Header extends React.Component {
 }
 
 const mapStateToProps = ({ profileReducer }) => ({
-  name: profileReducer.name,
+  ...profileReducer,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);

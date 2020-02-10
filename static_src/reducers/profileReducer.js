@@ -4,6 +4,6 @@ const initialStore = {
   phone: '+11001001010'
 };
 
-export default function profileReducer(store = initialStore) {
+export default function profileReducer(store = initialStore, action) {
   return store;
 }
