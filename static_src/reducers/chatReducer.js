@@ -1,6 +1,8 @@
 import update from 'react-addons-update';
 import { SEND_MESSAGE } from '../actions/messageActions';
 import { ADD_CHAT } from '../actions/chatActions';
+import { ON_LIGHT, OFF_LIGHT } from '../actions/lightActions';
+import { CHAT_REMOVE } from '../actions/removeActions';
 
 const initialStore = {
   chats: {
@@ -8,26 +10,32 @@ const initialStore = {
     2: {title: 'Чат 2', messageList: [2]},
     3: {title: 'Чат 3', messageList: []},
   },
-  messages: {
-    1: { text: 'Привет!', sender: 'bot' },
-    2: { text: 'Здравствуйте!', sender: 'bot' },
-  },
+  loadEffect: []
 };
 
 export default function chatReducer(store = initialStore, action) {
   switch (action.type) {
     case SEND_MESSAGE: {
       return update(store, {
-        messages: { $merge: {
-          [action.messageId]: {
-            text: action.text,
-            sender: action.sender,
-        } } },
         chats: { $merge: { 
           [action.chatId]: {
             title: store.chats[action.chatId].title,
-            messageList: [...store.chats[action.chatId].messageList, action.messageId]
+            messageList: [...store.chats[action.chatId].messageList, action.messageId],
         } } }
+      });
+    }
+    case ON_LIGHT: {
+      const chatId = Number(action.chatId);
+      return update(store, {
+        loadEffect: { $set: [...store.loadEffect, chatId] }
+      });
+    }
+    case OFF_LIGHT: {
+      const chatId = Number(action.chatId);
+      const loadEffect = [...store.loadEffect];
+      delete loadEffect[loadEffect.indexOf(chatId)];
+      return update(store, {
+        loadEffect: { $set: loadEffect }
       });
     }
     case ADD_CHAT: {
@@ -37,6 +45,14 @@ export default function chatReducer(store = initialStore, action) {
           [chatId]: {
             title: action.title, messageList: []
         } } },
+      });
+    }
+    case CHAT_REMOVE: {
+      const chatId = Number(action.chatId);
+      return update(store, {
+        chats: { $set: {
+          [chatId]: {} 
+        } },
       });
     }
     default:

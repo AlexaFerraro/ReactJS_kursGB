@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { TextField, FloatingActionButton } from 'material-ui';
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import SendIcon from 'material-ui/svg-icons/content/send';
 import Message from './Message';
 import { sendMessage } from '../actions/messageActions';
+import { messageRemove } from '../actions/removeActions';
 import '../styles/styles.css';
 
 class MessageField extends React.Component {
@@ -15,6 +17,7 @@ class MessageField extends React.Component {
     messages:    PropTypes.object.isRequired,
     chats:       PropTypes.object.isRequired,
     sendMessage: PropTypes.func.isRequired,
+    messageRemove: PropTypes.func.isRequired,
   };
 
   state = {
@@ -39,6 +42,11 @@ class MessageField extends React.Component {
     }
   };
 
+  messageRemove = (messageId) => {
+    //this.props.messageRemove(messageId);
+    console.log('remove '+ messageId);
+  }
+
   handleChange = (event) => {
     this.setState({ [event.target.name]: event.target.value });
   };
@@ -53,16 +61,6 @@ class MessageField extends React.Component {
     this.textInput.current.focus();
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { messages, chatId } = this.props;
-    if (Object.keys(prevProps.messages).length < Object.keys(messages).length &&
-        Object.values(messages)[Object.values(messages).length - 1].sender === 'me') {
-          setTimeout(() =>
-            this.handleSendMessage('Не приставай ко мне, я робот!', 'bot', chatId),
-              1000);
-    }
-  }
-
   render() {
     const { chatId, messages, chats } = this.props;
     const messageElements = chats[chatId].messageList.map(messageId => (
@@ -70,6 +68,9 @@ class MessageField extends React.Component {
         key={ messageId }
         text={ messages[messageId].text }
         sender={ messages[messageId].sender }
+        func={ <NavigationClose
+          onClick={ () => this.messageRemove(messageId) }
+        /> }
       />
     ));
 
@@ -96,11 +97,12 @@ class MessageField extends React.Component {
   }
 }
 
-const mapStateToProps = ({ chatReducer }) => ({
+const mapStateToProps = ({ chatReducer, messageReducer }) => ({
   chats: chatReducer.chats,
-  messages: chatReducer.messages, 
+  messages: messageReducer.messages, 
+  messageRemove: messageReducer.messageRemove,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({ sendMessage }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ sendMessage, messageRemove }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(MessageField);
