@@ -20,6 +20,7 @@ class ChatList extends React.Component {
     chatRemove: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
     loadEffect: PropTypes.arrayOf(PropTypes.number).isRequired,
+    removed: PropTypes.arrayOf(PropTypes.number).isRequired,
   };
 
   state = {
@@ -43,9 +44,8 @@ class ChatList extends React.Component {
     }
   };
 
-  chatRemove = (chatId) => {
-    //this.props.chatRemove(chatId);
-    console.log('remove '+ chatId);
+  async chatRemove(chatId) {
+    await this.props.chatRemove(chatId);
   }
 
   handleNavigate = (link) => {
@@ -53,10 +53,12 @@ class ChatList extends React.Component {
   };
 
   render() {
-    const { chats, loadEffect } = this.props;
+    const { chats, loadEffect, removed } = this.props;
     const chatElements = Object.keys(chats).map(chatId => (
       <ListItem
-        style={ loadEffect.indexOf(Number(chatId)) >= 0 ? { backgroundColor: 'lightblue' } : {} }
+        style={ loadEffect.indexOf(Number(chatId)) >= 0 ? { backgroundColor: 'lightblue' } : {} 
+        || removed.indexOf(Number(chatId)) >= 0 ? { className: 'hidden'} : {}
+        }
         key={ chatId }
         primaryText={ chats[chatId].title }
         leftIcon={ <ContentSend /> } 
@@ -97,6 +99,7 @@ const mapStateToProps = ({ chatReducer }) => ({
   chats: chatReducer.chats,
   loadEffect: chatReducer.loadEffect,
   chatRemove: chatReducer.chatRemove,
+  removed: chatReducer.removed,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({ addChat, push, chatRemove }, dispatch);

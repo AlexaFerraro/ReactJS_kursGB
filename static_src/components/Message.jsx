@@ -6,7 +6,7 @@ export default class Message extends React.Component {
   static propTypes = {
     text: PropTypes.string.isRequired,
     sender: PropTypes.string.isRequired,
-    func: PropTypes.func.isRequired,
+    func: PropTypes.object.isRequired,
   };
 
   render() {

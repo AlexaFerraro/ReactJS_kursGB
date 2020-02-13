@@ -1,8 +1,8 @@
 import update from 'react-addons-update';
 import { SEND_MESSAGE } from '../actions/messageActions';
-import { ADD_CHAT } from '../actions/chatActions';
+import { ADD_CHAT, SUCCESS_CHATS_LOADING } from '../actions/chatActions';
 import { ON_LIGHT, OFF_LIGHT } from '../actions/lightActions';
-import { CHAT_REMOVE } from '../actions/removeActions';
+import { START_CHAT_REMOVE, SUCCESS_CHAT_REMOVE, ERROR_CHAT_REMOVE, MESSAGE_REMOVE } from '../actions/removeActions';
 
 const initialStore = {
   chats: {
@@ -10,7 +10,9 @@ const initialStore = {
     2: {title: 'Чат 2', messageList: [2]},
     3: {title: 'Чат 3', messageList: []},
   },
-  loadEffect: []
+  loadEffect: [],
+  isLoading: true,
+  removed: [],
 };
 
 export default function chatReducer(store = initialStore, action) {
@@ -47,12 +49,31 @@ export default function chatReducer(store = initialStore, action) {
         } } },
       });
     }
-    case CHAT_REMOVE: {
-      const chatId = Number(action.chatId);
+    case START_CHAT_REMOVE: {
+      return store;
+    }
+    case SUCCESS_CHAT_REMOVE: {
+      const chats = store.chats;
+      delete chats[action.payload.id];
       return update(store, {
-        chats: { $set: {
-          [chatId]: {} 
-        } },
+        chats: { $set: chats },
+        removed: { $set: [...store.removed, action.payload.id] }
+      });
+    }
+    case ERROR_CHAT_REMOVE: {
+      console.log('Error chat remove');
+    }
+    case MESSAGE_REMOVE: {
+      const messageList = store.chats[action.chatId].messageList;
+      delete messageList[messageList.indexOf(action.messageId)];
+      return update(store, {
+        [store.chats[action.chatId].messageList]: { $set: messageList }
+      });
+    }
+    case SUCCESS_CHATS_LOADING: {
+      return update(store, {
+        chats: { $set: action.payload.entities.chats },
+        isLoading: { $set: false },
       });
     }
     default:
