@@ -18,6 +18,10 @@
   flex-direction: column;
 }
 
+.hidden {
+  display: none;
+}
+
 .message {
   margin: 20px;
   padding: 5px 15px;
@@ -38,7 +42,7 @@
 }
 
 .icon-menu {
-  margin-top: 1%;
+  margin-top: 2%;
 }
 
 .background-field {

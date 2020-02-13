@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import AppBar from 'material-ui/AppBar';
@@ -6,10 +7,25 @@ import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { Link } from 'react-router-dom';
+import { loadProfile } from '../actions/profileActions';
+import CircularProgress from 'material-ui/CircularProgress';
 
 class Profile extends React.Component {
 
+  static propTypes = {
+    data:      PropTypes.object.isRequired,
+    isLoading: PropTypes.bool.isRequired,
+  };
+
+  componentDidMount() {
+    this.props.loadProfile();
+  }
+
   render() {
+    if (this.props.isLoading) {
+      return <CircularProgress />
+    }
+    const { name, phone, email } = this.props.data;
     return <div className="background-field">
       <div className="header">
         <AppBar
@@ -33,9 +49,11 @@ class Profile extends React.Component {
         <div className="profile-block">
           <span className="message">
             <p className="bold">Имя: </p>
-              { this.props.name }
+              { name }
             <p className="bold">Номер телефона: </p>
-              { this.props.phone }
+              { phone }
+            <p className="bold">Email: </p>
+              { email }
           </span>
         </div>
       </div>
@@ -44,9 +62,10 @@ class Profile extends React.Component {
 }
 
 const mapStateToProps = ({ profileReducer }) => ({
-  ...profileReducer,
+  data: profileReducer.data,
+  isLoading: profileReducer.isLoading,
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ loadProfile }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);
