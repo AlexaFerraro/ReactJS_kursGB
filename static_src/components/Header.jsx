@@ -9,6 +9,7 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { Link } from 'react-router-dom';
 import Profile from './Profile';
 import { loadProfile } from '../actions/profileActions';
+import PushToggle from './PushToggle';
 
 
 class Header extends React.Component {
@@ -16,6 +17,7 @@ class Header extends React.Component {
   static propTypes = {
     chatId: PropTypes.number,
     data:   PropTypes.object.isRequired,
+    isLoading: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
@@ -27,10 +29,13 @@ class Header extends React.Component {
   }
 
   render() {
+    if (this.props.isLoading) {
+        return <div>GeekChat</div>
+    }
     const { name } = this.props.data;
     return <div className="header">
       <AppBar
-        title="Chat on React"
+        title={<PushToggle />}
         iconClassNameRight="muidocs-icon-navigation-expand-more"
       >
         <span style={ { fontSize: '14px', color: 'lightblue', margin: '3%' } }>User:{ name }
@@ -52,8 +57,9 @@ class Header extends React.Component {
   }
 }
 
-const mapStateToProps = ({ profileReducer }) => ({
+const mapStateToProps = ({ profileReducer, chatReducer }) => ({
   data: profileReducer.data,
+  isLoading: chatReducer.isLoading,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({ loadProfile }, dispatch);

@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import MessageField from './MessageField';
 import ChatList from './ChatList';
 import Header from './Header';
+import InstallPopup from './InstallPopup';
 import { sendMessage } from '../actions/messageActions';
 
 class Layout extends React.Component {
@@ -20,6 +21,7 @@ class Layout extends React.Component {
   render() {
     return (
       <div className="background-field">
+        <InstallPopup />
         <Header chatId={ this.props.chatId } />
         <div className="body-block">
           <ChatList/>
