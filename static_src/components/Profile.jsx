@@ -34,7 +34,7 @@ class Profile extends React.Component {
         >
 
           <span style={ { fontSize: '20px', color: 'white', margin: '3%' } }>Profile</span>
-          <Link to="/chat/1/">
+          <Link to="/">
             <IconMenu
               className="icon-menu"
               iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}

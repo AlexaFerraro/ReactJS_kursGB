@@ -2,11 +2,14 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Layout from './Layout';
 import Profile from './Profile';
+import InstallPopup from './InstallPopup';
 
 export default class Router extends React.Component {
   render() {
     return (
-      <Switch>
+      [
+      <InstallPopup key='InstallPopup'/>,
+      <Switch key='App'>
         <Route exact={ true } path='/' component={ Layout } />
         <Route
           exact
@@ -25,6 +28,7 @@ export default class Router extends React.Component {
           }
         />
       </Switch>
+      ]
     )
   }
 }
